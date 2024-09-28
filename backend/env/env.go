@@ -3,34 +3,30 @@ package env
 import (
 	"fmt"
 	"os"
-	"strconv"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 type Env struct {
-	port   int
-	secret string
+	Port   string
+	Secret string
 }
 
 func envPrefix(env string) string {
 	return "VMG_MIDI_" + env
 }
 
-func getPort() (int, error) {
-	from_env := os.Getenv(envPrefix("PORT"))
+func GetPort() string {
+	port := os.Getenv(envPrefix("PORT"))
 
-	if from_env == "" {
-		return 0, fmt.Errorf("%s is not set.", envPrefix("PORT"))
+	if port == "" {
+		return ":0"
 	}
 
-	port, err := strconv.Atoi(from_env)
-	if err != nil {
-		return 0, err
-	}
-
-	return port, nil
+	return fmt.Sprintf(":%v", port)
 }
 
-func getSecret() (string, error) {
+func GetSecret() (string, error) {
 	secret := os.Getenv(envPrefix("SECRET"))
 
 	if secret == "" {
@@ -41,12 +37,10 @@ func getSecret() (string, error) {
 }
 
 func GetEnv() (Env, error) {
-	port, port_err := getPort()
-	if port_err != nil {
-		return Env{}, port_err
-	}
+	// e.Load("../.env")
+	port := GetPort()
 
-	secret, secret_err := getSecret()
+	secret, secret_err := GetSecret()
 	if secret_err != nil {
 		return Env{}, secret_err
 	}

@@ -60,8 +60,8 @@ func TestGetEnv(t *testing.T) {
 	// Tests
 	got, err := GetEnv()
 	expected := Env{
-		port:   3000,
-		secret: "This is a secret key.",
+		Port:   3000,
+		Secret: "This is a secret key.",
 	}
 
 	if err != nil {
