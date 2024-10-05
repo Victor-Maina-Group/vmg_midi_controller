@@ -1,5 +1,6 @@
 import React from "react";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { ControllerLayout } from "@/layouts/controllers";
 
 const TanStackRouterDevTools = import.meta.env.PROD
   ? () => null
@@ -10,10 +11,10 @@ const TanStackRouterDevTools = import.meta.env.PROD
     );
 
 export const Route = createRootRoute({
-  component: () => (
-    <>
+  component: React.memo(() => (
+    <ControllerLayout>
       <Outlet />
       <TanStackRouterDevTools />
-    </>
-  ),
+    </ControllerLayout>
+  )),
 });

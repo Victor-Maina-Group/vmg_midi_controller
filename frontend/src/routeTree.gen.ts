@@ -11,146 +11,189 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ControllersImport } from './routes/_controllers'
 import { Route as ControllersIndexImport } from './routes/_controllers/index'
 import { Route as ControllersTransportRouteImport } from './routes/_controllers/transport/route'
 import { Route as ControllersSlidersRouteImport } from './routes/_controllers/sliders/route'
 import { Route as ControllersPadsRouteImport } from './routes/_controllers/pads/route'
+import { Route as ControllersSlidersGroupIdImport } from './routes/_controllers/sliders/$groupId'
+import { Route as ControllersPadsGroupIdImport } from './routes/_controllers/pads/$groupId'
 
 // Create/Update Routes
 
-const ControllersRoute = ControllersImport.update({
-  id: '/_controllers',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const ControllersIndexRoute = ControllersIndexImport.update({
   path: '/',
-  getParentRoute: () => ControllersRoute,
+  getParentRoute: () => rootRoute,
 } as any)
 
 const ControllersTransportRouteRoute = ControllersTransportRouteImport.update({
   path: '/transport',
-  getParentRoute: () => ControllersRoute,
+  getParentRoute: () => rootRoute,
 } as any)
 
 const ControllersSlidersRouteRoute = ControllersSlidersRouteImport.update({
   path: '/sliders',
-  getParentRoute: () => ControllersRoute,
+  getParentRoute: () => rootRoute,
 } as any)
 
 const ControllersPadsRouteRoute = ControllersPadsRouteImport.update({
   path: '/pads',
-  getParentRoute: () => ControllersRoute,
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ControllersSlidersGroupIdRoute = ControllersSlidersGroupIdImport.update({
+  path: '/$groupId',
+  getParentRoute: () => ControllersSlidersRouteRoute,
+} as any)
+
+const ControllersPadsGroupIdRoute = ControllersPadsGroupIdImport.update({
+  path: '/$groupId',
+  getParentRoute: () => ControllersPadsRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_controllers': {
-      id: '/_controllers'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof ControllersImport
-      parentRoute: typeof rootRoute
-    }
     '/_controllers/pads': {
       id: '/_controllers/pads'
       path: '/pads'
       fullPath: '/pads'
       preLoaderRoute: typeof ControllersPadsRouteImport
-      parentRoute: typeof ControllersImport
+      parentRoute: typeof rootRoute
     }
     '/_controllers/sliders': {
       id: '/_controllers/sliders'
       path: '/sliders'
       fullPath: '/sliders'
       preLoaderRoute: typeof ControllersSlidersRouteImport
-      parentRoute: typeof ControllersImport
+      parentRoute: typeof rootRoute
     }
     '/_controllers/transport': {
       id: '/_controllers/transport'
       path: '/transport'
       fullPath: '/transport'
       preLoaderRoute: typeof ControllersTransportRouteImport
-      parentRoute: typeof ControllersImport
+      parentRoute: typeof rootRoute
     }
     '/_controllers/': {
       id: '/_controllers/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof ControllersIndexImport
-      parentRoute: typeof ControllersImport
+      parentRoute: typeof rootRoute
+    }
+    '/_controllers/pads/$groupId': {
+      id: '/_controllers/pads/$groupId'
+      path: '/$groupId'
+      fullPath: '/pads/$groupId'
+      preLoaderRoute: typeof ControllersPadsGroupIdImport
+      parentRoute: typeof ControllersPadsRouteImport
+    }
+    '/_controllers/sliders/$groupId': {
+      id: '/_controllers/sliders/$groupId'
+      path: '/$groupId'
+      fullPath: '/sliders/$groupId'
+      preLoaderRoute: typeof ControllersSlidersGroupIdImport
+      parentRoute: typeof ControllersSlidersRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface ControllersRouteChildren {
-  ControllersPadsRouteRoute: typeof ControllersPadsRouteRoute
-  ControllersSlidersRouteRoute: typeof ControllersSlidersRouteRoute
-  ControllersTransportRouteRoute: typeof ControllersTransportRouteRoute
-  ControllersIndexRoute: typeof ControllersIndexRoute
+interface ControllersPadsRouteRouteChildren {
+  ControllersPadsGroupIdRoute: typeof ControllersPadsGroupIdRoute
 }
 
-const ControllersRouteChildren: ControllersRouteChildren = {
-  ControllersPadsRouteRoute: ControllersPadsRouteRoute,
-  ControllersSlidersRouteRoute: ControllersSlidersRouteRoute,
-  ControllersTransportRouteRoute: ControllersTransportRouteRoute,
-  ControllersIndexRoute: ControllersIndexRoute,
+const ControllersPadsRouteRouteChildren: ControllersPadsRouteRouteChildren = {
+  ControllersPadsGroupIdRoute: ControllersPadsGroupIdRoute,
 }
 
-const ControllersRouteWithChildren = ControllersRoute._addFileChildren(
-  ControllersRouteChildren,
-)
+const ControllersPadsRouteRouteWithChildren =
+  ControllersPadsRouteRoute._addFileChildren(ControllersPadsRouteRouteChildren)
+
+interface ControllersSlidersRouteRouteChildren {
+  ControllersSlidersGroupIdRoute: typeof ControllersSlidersGroupIdRoute
+}
+
+const ControllersSlidersRouteRouteChildren: ControllersSlidersRouteRouteChildren =
+  {
+    ControllersSlidersGroupIdRoute: ControllersSlidersGroupIdRoute,
+  }
+
+const ControllersSlidersRouteRouteWithChildren =
+  ControllersSlidersRouteRoute._addFileChildren(
+    ControllersSlidersRouteRouteChildren,
+  )
 
 export interface FileRoutesByFullPath {
-  '': typeof ControllersRouteWithChildren
-  '/pads': typeof ControllersPadsRouteRoute
-  '/sliders': typeof ControllersSlidersRouteRoute
+  '/pads': typeof ControllersPadsRouteRouteWithChildren
+  '/sliders': typeof ControllersSlidersRouteRouteWithChildren
   '/transport': typeof ControllersTransportRouteRoute
   '/': typeof ControllersIndexRoute
+  '/pads/$groupId': typeof ControllersPadsGroupIdRoute
+  '/sliders/$groupId': typeof ControllersSlidersGroupIdRoute
 }
 
 export interface FileRoutesByTo {
-  '/pads': typeof ControllersPadsRouteRoute
-  '/sliders': typeof ControllersSlidersRouteRoute
+  '/pads': typeof ControllersPadsRouteRouteWithChildren
+  '/sliders': typeof ControllersSlidersRouteRouteWithChildren
   '/transport': typeof ControllersTransportRouteRoute
   '/': typeof ControllersIndexRoute
+  '/pads/$groupId': typeof ControllersPadsGroupIdRoute
+  '/sliders/$groupId': typeof ControllersSlidersGroupIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/_controllers': typeof ControllersRouteWithChildren
-  '/_controllers/pads': typeof ControllersPadsRouteRoute
-  '/_controllers/sliders': typeof ControllersSlidersRouteRoute
+  '/_controllers/pads': typeof ControllersPadsRouteRouteWithChildren
+  '/_controllers/sliders': typeof ControllersSlidersRouteRouteWithChildren
   '/_controllers/transport': typeof ControllersTransportRouteRoute
   '/_controllers/': typeof ControllersIndexRoute
+  '/_controllers/pads/$groupId': typeof ControllersPadsGroupIdRoute
+  '/_controllers/sliders/$groupId': typeof ControllersSlidersGroupIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/pads' | '/sliders' | '/transport' | '/'
+  fullPaths:
+    | '/pads'
+    | '/sliders'
+    | '/transport'
+    | '/'
+    | '/pads/$groupId'
+    | '/sliders/$groupId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/pads' | '/sliders' | '/transport' | '/'
+  to:
+    | '/pads'
+    | '/sliders'
+    | '/transport'
+    | '/'
+    | '/pads/$groupId'
+    | '/sliders/$groupId'
   id:
     | '__root__'
-    | '/_controllers'
     | '/_controllers/pads'
     | '/_controllers/sliders'
     | '/_controllers/transport'
     | '/_controllers/'
+    | '/_controllers/pads/$groupId'
+    | '/_controllers/sliders/$groupId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  ControllersRoute: typeof ControllersRouteWithChildren
+  ControllersPadsRouteRoute: typeof ControllersPadsRouteRouteWithChildren
+  ControllersSlidersRouteRoute: typeof ControllersSlidersRouteRouteWithChildren
+  ControllersTransportRouteRoute: typeof ControllersTransportRouteRoute
+  ControllersIndexRoute: typeof ControllersIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  ControllersRoute: ControllersRouteWithChildren,
+  ControllersPadsRouteRoute: ControllersPadsRouteRouteWithChildren,
+  ControllersSlidersRouteRoute: ControllersSlidersRouteRouteWithChildren,
+  ControllersTransportRouteRoute: ControllersTransportRouteRoute,
+  ControllersIndexRoute: ControllersIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -165,12 +208,6 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/_controllers"
-      ]
-    },
-    "/_controllers": {
-      "filePath": "_controllers.tsx",
-      "children": [
         "/_controllers/pads",
         "/_controllers/sliders",
         "/_controllers/transport",
@@ -179,19 +216,29 @@ export const routeTree = rootRoute
     },
     "/_controllers/pads": {
       "filePath": "_controllers/pads/route.tsx",
-      "parent": "/_controllers"
+      "children": [
+        "/_controllers/pads/$groupId"
+      ]
     },
     "/_controllers/sliders": {
       "filePath": "_controllers/sliders/route.tsx",
-      "parent": "/_controllers"
+      "children": [
+        "/_controllers/sliders/$groupId"
+      ]
     },
     "/_controllers/transport": {
-      "filePath": "_controllers/transport/route.tsx",
-      "parent": "/_controllers"
+      "filePath": "_controllers/transport/route.tsx"
     },
     "/_controllers/": {
-      "filePath": "_controllers/index.tsx",
-      "parent": "/_controllers"
+      "filePath": "_controllers/index.tsx"
+    },
+    "/_controllers/pads/$groupId": {
+      "filePath": "_controllers/pads/$groupId.tsx",
+      "parent": "/_controllers/pads"
+    },
+    "/_controllers/sliders/$groupId": {
+      "filePath": "_controllers/sliders/$groupId.tsx",
+      "parent": "/_controllers/sliders"
     }
   }
 }

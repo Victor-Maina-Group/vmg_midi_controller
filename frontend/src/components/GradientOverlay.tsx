@@ -1,9 +1,10 @@
+import React, { useMemo } from "react";
 import { useState, RefObject, useEffect } from "react";
 
 type GradientOverlayPropsType = {
   parentRef: RefObject<HTMLElement>;
 };
-export function GradientOverlay(props: GradientOverlayPropsType) {
+export const GradientOverlay = React.memo((props: GradientOverlayPropsType) => {
   type SizeType = {
     clientWidth: number;
     scrollWidth: number;
@@ -12,6 +13,10 @@ export function GradientOverlay(props: GradientOverlayPropsType) {
   const [showOverlay, setShowOverlay] = useState<boolean>();
   const [showLeftOverlay, setShowLeftOverlay] = useState<boolean>();
   const [showRightOverlay, setShowRightOverlay] = useState<boolean>();
+  const parentEl = useMemo(
+    () => props.parentRef.current,
+    [props.parentRef.current],
+  );
 
   function updateParentWidth(entries: ResizeObserverEntry[]) {
     for (let entry of entries) {
@@ -28,7 +33,7 @@ export function GradientOverlay(props: GradientOverlayPropsType) {
   // Create ResizeObserver to monitor size changes in parent
   useEffect(() => {
     const observer = new ResizeObserver(updateParentWidth);
-    const el = props.parentRef.current;
+    const el = parentEl;
 
     if (el) observer.observe(el);
     setShowOverlay(
@@ -74,19 +79,19 @@ export function GradientOverlay(props: GradientOverlayPropsType) {
 
   return (
     <div
-      className={`absolute z-50 ${!showOverlay && "hidden"} inset-0 pointer-events-none`}
+      className={`absolute z-50 ${!showOverlay && "hidden"} pointer-events-none inset-0`}
     >
       {/* Left Overlay */}
       <div
         id="leftOverlay"
-        className={`absolute inset-0 right-[80%] bg-gradient-to-r from-white to-white/0 transition-opacity ${showLeftOverlay ? "opacity-100" : "opacity-0"}`}
+        className={`absolute inset-0 right-[80%] bg-gradient-to-r from-white to-white/0 ${showLeftOverlay ? "opacity-100" : "opacity-0"}`}
       ></div>
 
       {/* Right Overlay */}
       <div
         id="leftOverlay"
-        className={`absolute inset-0 left-[80%] bg-gradient-to-l from-white to-white/0 transition-opacity ${showRightOverlay ? "opacity-100" : "opacity-0"}`}
+        className={`absolute inset-0 left-[80%] bg-gradient-to-l from-white to-white/0 ${showRightOverlay ? "opacity-100" : "opacity-0"}`}
       ></div>
     </div>
   );
-}
+});
