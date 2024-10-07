@@ -10,15 +10,15 @@ import {
   Link,
   ToSubOptions,
   useLocation,
-  useMatch,
 } from "@tanstack/react-router";
 import {
   ForwardedRef,
   forwardRef,
   memo,
   PropsWithChildren,
-  useMemo,
+  useEffect,
   useRef,
+  useState,
 } from "react";
 import { useStore } from "zustand";
 
@@ -60,23 +60,14 @@ const Header = () => {
           ref={navRef}
           className="inset-0 z-10 flex max-w-max gap-2 overflow-x-auto [-ms-overflow-style:_none] [overflow:-moz-scrollbars-none] [scrollbar-with:_none] max-lg:absolute [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar]:w-0"
         >
-          {/* {linkProps.map((linkProp, i) => (
-            <NavLink
-              key={i}
-              to={linkProp.to}
-              icon={linkProp.icon}
-              // ref={(link) => linkRefs.current.push(link)}
-            >
-              {linkProp.text}
-            </NavLink>
-          ))} */}
-
           <NavLink to="/transport" icon="bx:play">
             Transport
           </NavLink>
           <SlidersNavLink />
+          <PadsNavLink />
         </div>
       </nav>
+
       <TrackInfo />
 
       <div className="flex items-center gap-1">
@@ -105,6 +96,19 @@ function SlidersNavLink() {
   );
 }
 
+function PadsNavLink() {
+  const { pads: lastPadsGroup } = useStore(lastGroupStore);
+  return (
+    <NavLink
+      to={"/pads/$groupId" as ToSubOptions["to"]}
+      params={{ groupId: lastPadsGroup } as ToSubOptions["params"]}
+      icon="bxs:grid"
+    >
+      Pads
+    </NavLink>
+  );
+}
+
 type NavLinkPropsType = CreateLinkProps & {
   to?: ToSubOptions["to"];
   href?: ToSubOptions["to"];
@@ -114,10 +118,12 @@ const NavLink = memo(
   createLink(
     forwardRef(
       (props: NavLinkPropsType, ref: ForwardedRef<HTMLAnchorElement>) => {
-        const isActive = false;
+        const [isActive, setIsActive] = useState(false);
+        const { href: locationHref } = useLocation();
 
-        const match = useMatch({ from: props.href });
-        console.log(match);
+        useEffect(() => {
+          setIsActive(locationHref === props.href);
+        }, [isActive, locationHref, props.href]);
 
         return (
           <Link ref={ref} {...props} to={props.href}>

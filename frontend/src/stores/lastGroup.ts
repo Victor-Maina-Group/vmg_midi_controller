@@ -14,7 +14,6 @@ export const lastGroupStore = createStore<LastGroupStateType>()((set) => {
     pads: "1",
     update: (group, val) => {
       set((state) => ({ ...state, [group]: val }));
-      console.log(group, val);
     },
   };
 });

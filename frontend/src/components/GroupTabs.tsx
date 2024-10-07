@@ -5,8 +5,17 @@ import {
   ToSubOptions,
   useLocation,
   useMatch,
+  useParentMatches,
 } from "@tanstack/react-router";
-import { ForwardedRef, forwardRef, memo, ReactNode, useMemo } from "react";
+import {
+  ForwardedRef,
+  forwardRef,
+  memo,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Tab } from "./Tab";
 
 type GroupTabsType = {
@@ -38,10 +47,13 @@ type GroupTabProps = {
 export const GroupTab = memo(
   createLink(
     forwardRef((props: GroupTabProps, ref: ForwardedRef<HTMLAnchorElement>) => {
-      const { pathname } = useMatch({ from: props.to });
-      const isActive = useMemo(() => {
-        return pathname === props.href;
-      }, [pathname]);
+      const [isActive, setIsActive] = useState(false);
+      const { href: locationHref } = useLocation();
+
+      useEffect(() => {
+        setIsActive(locationHref === props.href);
+      }, [locationHref, isActive, props.href]);
+
       return (
         <Link ref={ref} {...props} to={props.href}>
           <Tab ref={ref} isActive={isActive} className="h-max">
