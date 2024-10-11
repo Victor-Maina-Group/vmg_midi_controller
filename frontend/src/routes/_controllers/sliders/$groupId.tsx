@@ -1,5 +1,5 @@
 import { GroupTabs } from "@/components/GroupTabs";
-import { Slider } from "@/components/Slider";
+import Slider from "@/components/Slider";
 import { GroupNumType, lastGroupStore } from "@/stores/lastGroup";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 
@@ -21,12 +21,17 @@ export const Route = createFileRoute("/_controllers/sliders/$groupId")({
       </>
     );
   },
+  pendingMinMs: 1000,
+  pendingMs: 1000,
+  pendingComponent() {
+    return <div>Sliders loading...</div>;
+  },
 });
 
 function SliderGroup() {
   return (
     <>
-      <main className="flex flex-1 justify-between gap-4">
+      <main className="flex flex-1 justify-between gap-4 lg:mx-12">
         <Slider />
         <Slider />
         <Slider />

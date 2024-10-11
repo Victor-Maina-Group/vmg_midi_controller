@@ -1,5 +1,5 @@
 import React from "react";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet, useRouter } from "@tanstack/react-router";
 import { ControllerLayout } from "@/layouts/controllers";
 
 const TanStackRouterDevTools = import.meta.env.PROD
@@ -11,10 +11,18 @@ const TanStackRouterDevTools = import.meta.env.PROD
     );
 
 export const Route = createRootRoute({
-  component: React.memo(() => (
-    <ControllerLayout>
-      <Outlet />
-      <TanStackRouterDevTools />
-    </ControllerLayout>
-  )),
+  component: React.memo(() => {
+    const isLoading = useRouter().state.isLoading;
+
+    if (isLoading) return <div>Loading...</div>;
+
+    return (
+      <>
+        <ControllerLayout>
+          <Outlet />
+        </ControllerLayout>
+        <TanStackRouterDevTools />
+      </>
+    );
+  }),
 });

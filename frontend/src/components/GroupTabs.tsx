@@ -4,8 +4,6 @@ import {
   Link,
   ToSubOptions,
   useLocation,
-  useMatch,
-  useParentMatches,
 } from "@tanstack/react-router";
 import {
   ForwardedRef,
@@ -13,7 +11,6 @@ import {
   memo,
   ReactNode,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { Tab } from "./Tab";
@@ -31,6 +28,7 @@ export function GroupTabs({ parentRoute }: GroupTabsType) {
           <GroupTab
             key={num}
             to={parentRoute}
+            // @ts-ignore
             params={{ groupId: num.toString() }}
           >
             <span className="text-sm font-medium">Group {num}</span>

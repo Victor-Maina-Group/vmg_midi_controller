@@ -13,10 +13,6 @@ export const GradientOverlay = React.memo((props: GradientOverlayPropsType) => {
   const [showOverlay, setShowOverlay] = useState<boolean>();
   const [showLeftOverlay, setShowLeftOverlay] = useState<boolean>();
   const [showRightOverlay, setShowRightOverlay] = useState<boolean>();
-  const parentEl = useMemo(
-    () => props.parentRef.current,
-    [props.parentRef.current],
-  );
 
   function updateParentWidth(entries: ResizeObserverEntry[]) {
     for (let entry of entries) {
@@ -33,7 +29,7 @@ export const GradientOverlay = React.memo((props: GradientOverlayPropsType) => {
   // Create ResizeObserver to monitor size changes in parent
   useEffect(() => {
     const observer = new ResizeObserver(updateParentWidth);
-    const el = parentEl;
+    const el = props.parentRef.current;
 
     if (el) observer.observe(el);
     setShowOverlay(
@@ -43,7 +39,7 @@ export const GradientOverlay = React.memo((props: GradientOverlayPropsType) => {
     );
 
     return () => observer.disconnect();
-  }, [parentRectInfo, showOverlay]);
+  }, [parentRectInfo, showOverlay, props.parentRef]);
 
   // Toggle left overlay on scroll
   useEffect(() => {

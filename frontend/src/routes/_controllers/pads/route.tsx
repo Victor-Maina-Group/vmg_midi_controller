@@ -6,8 +6,10 @@ export const Route = createFileRoute("/_controllers/pads")({
   component: () => {
     return <Outlet />;
   },
-  beforeLoad: () => {
+  beforeLoad: ({ params }) => {
     const { pads } = lastGroupStore.getState();
-    redirect({ to: padsGroupRoute.to, params: { groupId: pads } });
+    if (!params.hasOwnProperty("groupId")) {
+      throw redirect({ to: padsGroupRoute.to, params: { groupId: pads } });
+    }
   },
 });

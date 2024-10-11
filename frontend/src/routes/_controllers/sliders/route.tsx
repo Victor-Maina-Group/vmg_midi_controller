@@ -7,8 +7,13 @@ export const Route = createFileRoute("/_controllers/sliders")({
     return <Outlet />;
   },
   shouldReload: false,
-  beforeLoad: () => {
+  beforeLoad: ({ params }) => {
     const { sliders } = lastGroupStore.getState();
-    redirect({ to: sliderGroupRoute.to, params: { groupId: sliders } });
+    if (!params.hasOwnProperty("groupId")) {
+      throw redirect({ to: sliderGroupRoute.to, params: { groupId: sliders } });
+    }
   },
+  pendingMs: 500,
+  pendingMinMs: 500,
+  pendingComponent: () => <div>Loading sliders...</div>,
 });

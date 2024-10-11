@@ -16,6 +16,7 @@ import {
   forwardRef,
   memo,
   PropsWithChildren,
+  RefObject,
   useEffect,
   useRef,
   useState,
@@ -27,30 +28,32 @@ export const ControllerLayout = memo((props: ControllerPropsType) => {
   return (
     <div className="container m-auto flex min-h-full flex-col gap-4 p-4">
       <Header />
-      <div className="flex flex-1 gap-4 md:gap-8">{props.children}</div>
+      <div className="flex flex-1 gap-8 md:gap-12">{props.children}</div>
     </div>
   );
 });
 
 const Header = () => {
   const navRef = useRef<HTMLDivElement>(null);
+  const { pathname } = useLocation();
   // Scroll to respective tab when location changes
-  // useEffect(() => {
-  //   const navEl = navRef.current;
-  //   const els = linkRefs.current as HTMLAnchorElement[];
-  //   const timeout = setTimeout(() => {
-  //     els.forEach((el) => {
-  //       if (navEl && el.dataset.status === "active") {
-  //         navEl.scrollTo({ left: el.offsetLeft, behavior: "smooth" });
-  //       }
-  //     });
-  //   }, 100);
-  //
-  //   return () => {
-  //     linkRefs.current = new Array();
-  //     clearTimeout(timeout);
-  //   };
-  // }, [pathname]);
+  useEffect(() => {
+    const navEl = navRef.current;
+    const els = navEl?.querySelectorAll("a");
+    if (!els || els?.length == 0) return;
+
+    const timeout = setTimeout(() => {
+      els.forEach((el) => {
+        if (navEl && el.classList.contains("active")) {
+          navEl.scrollTo({ left: el.offsetLeft, behavior: "smooth" });
+        }
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [pathname]);
 
   return (
     <header className="item-center flex justify-between gap-4 font-medium">
@@ -60,7 +63,7 @@ const Header = () => {
           ref={navRef}
           className="inset-0 z-10 flex max-w-max gap-2 overflow-x-auto [-ms-overflow-style:_none] [overflow:-moz-scrollbars-none] [scrollbar-with:_none] max-lg:absolute [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar]:w-0"
         >
-          <NavLink to="/transport" icon="bx:play">
+          <NavLink to="/transport" icon="bx:play" parentref={navRef}>
             Transport
           </NavLink>
           <SlidersNavLink />
@@ -88,6 +91,7 @@ function SlidersNavLink() {
   return (
     <NavLink
       to={"/sliders/$groupId" as ToSubOptions["to"]}
+      // @ts-ignore
       params={{ groupId: lastSliderGroup } as ToSubOptions["params"]}
       icon="bx:slider-alt"
     >
@@ -101,6 +105,7 @@ function PadsNavLink() {
   return (
     <NavLink
       to={"/pads/$groupId" as ToSubOptions["to"]}
+      // @ts-ignore
       params={{ groupId: lastPadsGroup } as ToSubOptions["params"]}
       icon="bxs:grid"
     >
@@ -113,6 +118,7 @@ type NavLinkPropsType = CreateLinkProps & {
   to?: ToSubOptions["to"];
   href?: ToSubOptions["to"];
   icon: IconifyIconProps["icon"];
+  parentref?: RefObject<HTMLElement>;
 };
 const NavLink = memo(
   createLink(
@@ -124,6 +130,17 @@ const NavLink = memo(
         useEffect(() => {
           setIsActive(locationHref === props.href);
         }, [isActive, locationHref, props.href]);
+
+        useEffect(() => {
+          if (isActive) {
+            const parentEl = props.parentref?.current;
+            const el = ref;
+            if (!parentEl || !el) {
+              return;
+            }
+            parentEl.scrollTo({ left: el.offsetLeft, behavior: "smooth" });
+          }
+        }, [isActive]);
 
         return (
           <Link ref={ref} {...props} to={props.href}>
