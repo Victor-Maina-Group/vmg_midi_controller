@@ -2,6 +2,8 @@ import { Button } from "@/components/Button";
 import { GradientOverlay } from "@/components/GradientOverlay";
 import { Pill } from "@/components/Pill";
 import { Tab } from "@/components/Tab";
+import { useEventListener } from "@/hooks/useEventListener";
+import { useFullscreen } from "@/hooks/useFullScreen";
 import { lastGroupStore } from "@/stores/lastGroup";
 import { Icon, IconifyIconProps } from "@iconify/react/dist/iconify.js";
 import {
@@ -35,6 +37,7 @@ export const ControllerLayout = memo((props: ControllerPropsType) => {
 
 const Header = () => {
   const navRef = useRef<HTMLDivElement>(null);
+  const docRef = useRef(document.documentElement);
   const { pathname } = useLocation();
   // Scroll to respective tab when location changes
   useEffect(() => {
@@ -55,6 +58,8 @@ const Header = () => {
     };
   }, [pathname]);
 
+  const { isFullscreen, toggleFullScreen } = useFullscreen();
+
   return (
     <header className="item-center flex justify-between gap-4 font-medium">
       <nav className="relative max-lg:flex-1">
@@ -74,12 +79,12 @@ const Header = () => {
       <TrackInfo />
 
       <div className="flex items-center gap-1">
-        <Button>
+        {/* <Button>
           <Icon icon="bx:cog" />
-        </Button>
+        </Button> */}
 
-        <Button>
-          <Icon icon="bx:power-off" />
+        <Button onClick={() => toggleFullScreen()}>
+          <Icon icon={isFullscreen ? "bx:exit-fullscreen" : "bx:fullscreen"} />
         </Button>
       </div>
     </header>

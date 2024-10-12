@@ -1,24 +1,31 @@
 import * as Slider from "@radix-ui/react-slider";
-import {
-  TouchEventHandler,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
-import { Pill } from "./Pill";
+import { useRef } from "react";
 import { useEventListener } from "@/hooks/useEventListener";
+import { GroupNum, SliderUpdateParams, useSliderStore } from "@/stores/sliders";
+import { Pill } from "./Pill";
 
 type SliderPropsType = {
-  displayUnit: "db" | "percent" | undefined;
-  value: number;
+  id: number;
+  group: GroupNum;
 };
 
-export default ({ displayUnit }: SliderPropsType) => {
+export default ({ id, group }: SliderPropsType) => {
   const ref = useRef<HTMLSpanElement>(null);
-  const [sliderVals, setSliderVals] = useState<number[]>([0]);
-  function handleValChange(val: number[]) {
-    setSliderVals(val);
+  const value = useSliderStore((state) => state.data[group][id].value);
+  const { name, displayUnit } = useSliderStore(
+    (state) => state.data[group][id],
+  );
+  const update = useSliderStore((state) => state.update);
+
+  function handleChange(input: number[]) {
+    const value = input[0] as never;
+    const params: SliderUpdateParams = {
+      group,
+      sliderIndex: id,
+      field: "value",
+      value,
+    };
+    update(params);
   }
 
   useEventListener({
@@ -33,7 +40,7 @@ export default ({ displayUnit }: SliderPropsType) => {
   return (
     <div className="flex flex-col items-center gap-4">
       <Pill className="flex min-w-14 flex-row items-center justify-center gap-1">
-        <span>{sliderVals}</span>
+        <span>{value}</span>
         {displayUnit !== undefined && (
           <span className="text-sm font-semibold text-gray-600">
             {displayUnit}
@@ -42,56 +49,19 @@ export default ({ displayUnit }: SliderPropsType) => {
       </Pill>
       <Slider.Root
         ref={ref}
-        className="group relative h-full w-12 flex-1 flex-col items-center"
+        className="group relative h-full w-8 flex-1 flex-col items-center"
         orientation="vertical"
-        onValueChange={handleValChange}
-        value={sliderVals}
+        value={[value]}
+        onValueChange={handleChange}
         min={0}
         max={127}
       >
         <Slider.Track className="absolute inset-0 h-full w-full overflow-clip rounded-full bg-gray-200">
           <Slider.Range className="absolute w-full bg-gray-400" />
         </Slider.Track>
-        <Slider.Thumb className="absolute left-0 right-0 h-4 bg-gray-500" />
+        <Slider.Thumb className="block h-12 w-12 -translate-x-2 rounded-full bg-gray-500 transition-transform group-hover:scale-110" />
       </Slider.Root>
+      {name && <span className="font-medium">{name}</span>}
     </div>
   );
 };
-
-// import { ForwardedRef, forwardRef, PropsWithChildren } from "react";
-// import { Button } from "./Button";
-//
-// export function Slider() {
-//   return (
-//     <SliderTrack>
-//       <Knob />
-//     </SliderTrack>
-//   );
-// }
-//
-// type SliderTrackProps = {} & PropsWithChildren;
-// const SliderTrack = forwardRef(
-//   (props: SliderTrackProps, ref: ForwardedRef<HTMLDivElement>) => {
-//     return (
-//       <div
-//         ref={ref}
-//         className="relative flex h-full w-8 justify-center rounded-full bg-gray-200"
-//       >
-//         {props.children}
-//       </div>
-//     );
-//   },
-// );
-//
-// type KnobProps = {} & PropsWithChildren;
-// const Knob = forwardRef(
-//   (_: KnobProps, ref: ForwardedRef<HTMLButtonElement>) => {
-//     return (
-//       <Button
-//         ref={ref}
-//         className="absolute h-12 w-12 rounded-full bg-gray-400 transition-transform hover:scale-110 hover:bg-gray-400 active:bg-gray-500"
-//       ></Button>
-//     );
-//   },
-//
-// );

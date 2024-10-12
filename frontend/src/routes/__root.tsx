@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createRootRoute, Outlet, useRouter } from "@tanstack/react-router";
 import { ControllerLayout } from "@/layouts/controllers";
 

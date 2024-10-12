@@ -1,7 +1,9 @@
 import { GroupTabs } from "@/components/GroupTabs";
 import Slider from "@/components/Slider";
 import { GroupNumType, lastGroupStore } from "@/stores/lastGroup";
+import { GroupNum, useSliderStore } from "@/stores/sliders";
 import { createFileRoute, notFound } from "@tanstack/react-router";
+import { useStore } from "zustand/react";
 
 export const Route = createFileRoute("/_controllers/sliders/$groupId")({
   component: SliderGroup,
@@ -29,15 +31,14 @@ export const Route = createFileRoute("/_controllers/sliders/$groupId")({
 });
 
 function SliderGroup() {
+  const group = parseInt(useStore(lastGroupStore).sliders) as GroupNum;
+  const sliders = useSliderStore((state) => state.data[group]);
   return (
     <>
       <main className="flex flex-1 justify-between gap-4 lg:mx-12">
-        <Slider />
-        <Slider />
-        <Slider />
-        <Slider />
-        <Slider />
-        <Slider />
+        {sliders.map(({ id }, i) => (
+          <Slider key={id} id={i} group={group} />
+        ))}
       </main>
       <GroupTabs parentRoute={Route.fullPath} />
     </>
