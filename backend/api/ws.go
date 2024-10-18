@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
+	"slices"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -15,6 +17,24 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:   3,
 	WriteBufferSize:  3,
 	HandshakeTimeout: 10 * time.Second,
+	CheckOrigin: func(r *http.Request) bool {
+		u, err := url.Parse(r.Header.Get("Origin"))
+		if err != nil {
+			log.Println(err)
+		}
+
+		origin := u.Host
+
+		allowedHosts := []string{"localhost:5173", "localhost:4173"}
+
+		if id := slices.IndexFunc(allowedHosts, func(h string) bool {
+			return h != origin
+		}); id != -1 {
+			return true
+		}
+
+		return false
+	},
 }
 
 func WsEnpointHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +43,7 @@ func WsEnpointHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	log.Print("Websocket connected successfull")
+	log.Print("Websocket connected successfully!")
 	defer ws.Close()
 
 	// Get portName from request body
