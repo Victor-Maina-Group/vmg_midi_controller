@@ -33,7 +33,7 @@ var upgrader = websocket.Upgrader{
 			return true
 		}
 
-		return false
+		return true
 	},
 }
 

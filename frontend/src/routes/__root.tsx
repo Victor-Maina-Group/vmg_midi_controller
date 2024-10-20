@@ -1,17 +1,23 @@
-import React, { useEffect } from "react";
-import { createRootRoute, Outlet, useRouter } from "@tanstack/react-router";
+import { memo, lazy } from "react";
+import {
+  createRootRoute,
+  createRootRouteWithContext,
+  Outlet,
+  useRouter,
+} from "@tanstack/react-router";
 import { ControllerLayout } from "@/layouts/controllers";
+import { WebsocketContext } from "@/hooks/useWebsocket";
 
 const TanStackRouterDevTools = import.meta.env.PROD
   ? () => null
-  : React.lazy(() =>
+  : lazy(() =>
       import("@tanstack/router-devtools").then((res) => ({
         default: res.TanStackRouterDevtools,
       })),
     );
 
-export const Route = createRootRoute({
-  component: React.memo(() => {
+export const Route = createRootRouteWithContext<WebsocketContext>()({
+  component: memo(() => {
     const isLoading = useRouter().state.isLoading;
 
     if (isLoading) return <div>Loading...</div>;

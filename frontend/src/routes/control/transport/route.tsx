@@ -3,7 +3,7 @@ import { Icon } from '@iconify/react/dist/iconify.js'
 import { createFileRoute } from '@tanstack/react-router'
 import { PropsWithChildren } from 'react'
 
-export const Route = createFileRoute('/_controllers/transport')({
+export const Route = createFileRoute('/control/transport')({
   component: Transport,
 })
 

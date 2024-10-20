@@ -4,6 +4,7 @@ import {
   Link,
   ToSubOptions,
   useLocation,
+  useMatches,
 } from "@tanstack/react-router";
 import {
   ForwardedRef,
@@ -15,11 +16,13 @@ import {
 } from "react";
 import { Tab } from "./Tab";
 
-type GroupTabsType = {
-  parentRoute: string;
-};
-export function GroupTabs({ parentRoute }: GroupTabsType) {
+export const GroupTabs = memo(() => {
   const tabArr = [1, 2, 3, 4];
+  const matches = useMatches();
+  const { params, routeId } = matches[matches.length - 1];
+  const { groupId } = params as { groupId?: string };
+
+  if (!groupId) return null;
 
   return (
     <aside className="flex flex-col justify-center gap-4">
@@ -27,7 +30,7 @@ export function GroupTabs({ parentRoute }: GroupTabsType) {
         return (
           <GroupTab
             key={num}
-            to={parentRoute}
+            to={routeId}
             // @ts-ignore
             params={{ groupId: num.toString() }}
           >
@@ -37,7 +40,7 @@ export function GroupTabs({ parentRoute }: GroupTabsType) {
       })}
     </aside>
   );
-}
+});
 
 type GroupTabProps = {
   href?: ToSubOptions["to"];

@@ -3,17 +3,19 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { router } from "./router";
 import { RouterProvider } from "@tanstack/react-router";
+import { useWebsocket } from "./hooks/useWebsocket";
 
 declare module "@tanstack/react-router" {
-  interface Register {
+  interface Registerimport {
     router: typeof router;
   }
 }
 
 const App = () => {
+  const ctx = useWebsocket();
   return (
     <StrictMode>
-      <RouterProvider router={router} />
+      <RouterProvider router={router} context={ctx} />
     </StrictMode>
   );
 };

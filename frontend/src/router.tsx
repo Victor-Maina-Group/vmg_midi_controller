@@ -7,4 +7,7 @@ export const router = createRouter({
   defaultPendingComponent() {
     return <div> Loading.... </div>;
   },
+  context: {
+    socket: undefined!,
+  },
 });

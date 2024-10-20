@@ -1,19 +1,20 @@
 import * as Slider from "@radix-ui/react-slider";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEventListener } from "@/hooks/useEventListener";
 import { GroupNum, SliderUpdateParams, useSliderStore } from "@/stores/sliders";
 import { Pill } from "./Pill";
+import { useWebsocket } from "@/hooks/useWebsocket";
 
 type SliderPropsType = {
-  id: number;
+  sliderIndex: number;
   group: GroupNum;
 };
 
-export default ({ id, group }: SliderPropsType) => {
+export default ({ sliderIndex, group }: SliderPropsType) => {
   const ref = useRef<HTMLSpanElement>(null);
-  const value = useSliderStore((state) => state.data[group][id].value);
-  const { name, displayUnit } = useSliderStore(
-    (state) => state.data[group][id],
+  const value = useSliderStore((state) => state.data[group][sliderIndex].value);
+  const { id, name, displayUnit } = useSliderStore(
+    (state) => state.data[group][sliderIndex],
   );
   const update = useSliderStore((state) => state.update);
 
@@ -21,13 +22,14 @@ export default ({ id, group }: SliderPropsType) => {
     const value = input[0] as never;
     const params: SliderUpdateParams = {
       group,
-      sliderIndex: id,
+      sliderIndex: sliderIndex,
       field: "value",
       value,
     };
     update(params);
   }
 
+  // Prevent scrolling on touch screen devices.
   useEventListener({
     ref,
     handler: (e) => {
@@ -37,8 +39,19 @@ export default ({ id, group }: SliderPropsType) => {
     options: { passive: false },
   });
 
+  // Send MIDI message only if slider val changes, not on render
+  const { socket } = useWebsocket();
+  const [prevValue, setPrevValue] = useState(value); // Diff current val with previous val
+  useEffect(() => {
+    if (prevValue !== value) {
+      const midi_message = [176, id, value];
+      socket.send(JSON.stringify(midi_message));
+      setPrevValue(value);
+    }
+  }, [value]);
+
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex min-w-12 flex-col items-center gap-4">
       <Pill className="flex min-w-14 flex-row items-center justify-center gap-1">
         <span>{value}</span>
         {displayUnit !== undefined && (
@@ -61,7 +74,7 @@ export default ({ id, group }: SliderPropsType) => {
         </Slider.Track>
         <Slider.Thumb className="block h-12 w-12 -translate-x-2 rounded-full bg-gray-500 transition-transform group-hover:scale-110" />
       </Slider.Root>
-      {name && <span className="font-medium">{name}</span>}
+      {name && <span className="text-[min(4vh,1rem)] font-medium">{name}</span>}
     </div>
   );
 };

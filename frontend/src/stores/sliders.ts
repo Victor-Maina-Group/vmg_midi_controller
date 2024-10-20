@@ -33,7 +33,7 @@ function createInitSliderGroup(first_id: number) {
 export function createInit() {
   const init = {} as SliderGroups;
   let i = 1;
-  let first_id = 128;
+  let first_id = 14;
   while (i <= 4) {
     init[i as GroupNum] = createInitSliderGroup(first_id);
     i++;

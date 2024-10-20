@@ -1,0 +1,5 @@
+| 8|   sliderIndex: number;
+|12| export default ({ sliderIndex, group }: SliderPropsType) => {
+|14|   const value = useSliderStore((state) => state.data[group][sliderIndex].value);
+|16|     (state) => state.data[group][sliderIndex],
+|24|       sliderIndex: sliderIndex,

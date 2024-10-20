@@ -2,7 +2,6 @@ import { Button } from "@/components/Button";
 import { GradientOverlay } from "@/components/GradientOverlay";
 import { Pill } from "@/components/Pill";
 import { Tab } from "@/components/Tab";
-import { useEventListener } from "@/hooks/useEventListener";
 import { useFullscreen } from "@/hooks/useFullScreen";
 import { lastGroupStore } from "@/stores/lastGroup";
 import { Icon, IconifyIconProps } from "@iconify/react/dist/iconify.js";
@@ -24,20 +23,26 @@ import {
   useState,
 } from "react";
 import { useStore } from "zustand";
+import { Route as transportRoute } from "@/routes/control/transport/route";
+import { Route as slidersRoute } from "@/routes/control/sliders/$groupId";
+import { Route as padsRoute } from "@/routes/control/pads/$groupId";
+import { GroupTabs } from "@/components/GroupTabs";
 
 type ControllerPropsType = PropsWithChildren;
 export const ControllerLayout = memo((props: ControllerPropsType) => {
   return (
     <div className="container m-auto flex min-h-full flex-col gap-4 p-4">
       <Header />
-      <div className="flex flex-1 gap-8 md:gap-12">{props.children}</div>
+      <div className="flex flex-1 gap-8 md:gap-12">
+        {props.children}
+        <GroupTabs />
+      </div>
     </div>
   );
 });
 
 const Header = () => {
   const navRef = useRef<HTMLDivElement>(null);
-  const docRef = useRef(document.documentElement);
   const { pathname } = useLocation();
   // Scroll to respective tab when location changes
   useEffect(() => {
@@ -68,7 +73,7 @@ const Header = () => {
           ref={navRef}
           className="inset-0 z-10 flex max-w-max gap-2 overflow-x-auto [-ms-overflow-style:_none] [overflow:-moz-scrollbars-none] [scrollbar-with:_none] max-lg:absolute [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar]:w-0"
         >
-          <NavLink to="/transport" icon="bx:play" parentref={navRef}>
+          <NavLink to={transportRoute.to} icon="bx:play" parentref={navRef}>
             Transport
           </NavLink>
           <SlidersNavLink />
@@ -76,7 +81,7 @@ const Header = () => {
         </div>
       </nav>
 
-      <TrackInfo />
+      {/* <TrackInfo /> */}
 
       <div className="flex items-center gap-1">
         {/* <Button>
@@ -95,7 +100,7 @@ function SlidersNavLink() {
   const { sliders: lastSliderGroup } = useStore(lastGroupStore);
   return (
     <NavLink
-      to={"/sliders/$groupId" as ToSubOptions["to"]}
+      to={slidersRoute.to}
       // @ts-ignore
       params={{ groupId: lastSliderGroup } as ToSubOptions["params"]}
       icon="bx:slider-alt"
@@ -109,7 +114,7 @@ function PadsNavLink() {
   const { pads: lastPadsGroup } = useStore(lastGroupStore);
   return (
     <NavLink
-      to={"/pads/$groupId" as ToSubOptions["to"]}
+      to={padsRoute.to}
       // @ts-ignore
       params={{ groupId: lastPadsGroup } as ToSubOptions["params"]}
       icon="bxs:grid"

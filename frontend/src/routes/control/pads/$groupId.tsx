@@ -1,9 +1,8 @@
-import { GroupTabs } from "@/components/GroupTabs";
 import { Pad } from "@/components/Pad";
 import { GroupNumType, lastGroupStore } from "@/stores/lastGroup";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_controllers/pads/$groupId")({
+export const Route = createFileRoute("/control/pads/$groupId")({
   component: Pads,
   loader: ({ params: { groupId } }) => {
     const id = parseInt(groupId);
@@ -36,7 +35,6 @@ function Pads() {
         <Pad />
         <Pad />
       </main>
-      <GroupTabs parentRoute={Route.fullPath} />
     </>
   );
 }
