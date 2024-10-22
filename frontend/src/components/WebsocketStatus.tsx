@@ -1,24 +1,26 @@
-import { useWebsocket } from "@/hooks/useWebsocket";
 import { Button } from "./Button";
 
-export function WebSocketLoaderComponent() {
-  const { socketState } = useWebsocket();
-
-  console.log(socketState);
-
-  if (socketState === "connecting") {
-    return <div>Connecting to MIDI host...</div>;
-  }
-
-  if (socketState === "closed") {
-    return <WebSocketClosedComponent />;
+type SocketLoadingComponent = {
+  readyState: WebSocket["readyState"];
+  reconnectSocket: () => void;
+};
+export function SocketLoadingComponent(props: SocketLoadingComponent) {
+  switch (props.readyState) {
+    case WebSocket.OPEN:
+      return <div>Connecting to MIDI host...</div>;
+    case WebSocket.CLOSED || WebSocket.CLOSING:
+      return <WebSocketClosedComponent reconnect={props.reconnectSocket} />;
+    default:
+      return null;
   }
 }
 
-function WebSocketClosedComponent() {
-  const { reconnectSocket } = useWebsocket();
+type WebSocketClosedComponentProps = { reconnect: () => void };
+function WebSocketClosedComponent({
+  reconnect,
+}: WebSocketClosedComponentProps) {
   function handleConnect() {
-    reconnectSocket();
+    reconnect();
   }
   return (
     <div>

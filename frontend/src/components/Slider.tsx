@@ -1,11 +1,11 @@
 import * as Slider from "@radix-ui/react-slider";
 import { useEffect, useRef, useState } from "react";
 import { useEventListener } from "@/hooks/useEventListener";
-import { GroupNum, SliderUpdateParams } from "@/store/sliders";
+import { SliderUpdateParams } from "@/store/sliders";
 import { Pill } from "./Pill";
-import { useWebsocket } from "@/hooks/useWebsocket";
 import { useStore } from "zustand";
 import { boundStore } from "@/store";
+import { GroupNum } from "@/store/lastGroup";
 
 type SliderPropsType = {
   sliderIndex: number;
@@ -46,12 +46,12 @@ export default ({ sliderIndex, group }: SliderPropsType) => {
   });
 
   // Send MIDI message only if slider val changes, not on render
-  const { socket } = useWebsocket();
+  // const { socket } = useWebsocket();
   const [prevValue, setPrevValue] = useState(value); // Diff current val with previous val
   useEffect(() => {
     if (prevValue !== value) {
       const midi_message = [176, id, value];
-      socket.send(JSON.stringify(midi_message));
+      // socket.send(JSON.stringify(midi_message));
       setPrevValue(value);
     }
   }, [value]);
