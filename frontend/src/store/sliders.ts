@@ -1,4 +1,5 @@
-import { create } from "zustand/react";
+import { StateCreator } from "zustand";
+import { GroupNum } from "./lastGroup";
 
 export type SliderData = {
   id: number;
@@ -7,7 +8,6 @@ export type SliderData = {
   displayUnit?: "db" | "percent";
 };
 
-export type GroupNum = 1 | 2 | 3 | 4;
 export type SliderGroup = SliderData[];
 export type SliderGroups = Record<GroupNum, SliderGroup>;
 
@@ -49,27 +49,20 @@ export type SliderUpdateParams = {
   value: never;
 };
 
-export type SliderStoreState = {
-  data: SliderGroups;
+export type SliderSlice = {
+  slidersData: SliderGroups;
+  slidersUpdate: (params: SliderUpdateParams) => void;
 };
 
-export type SliderStoreActions = {
-  update: (params: SliderUpdateParams) => void;
-};
-
-const init: SliderStoreState = { data: createInit() };
-
-export const useSliderStore = create<SliderStoreState & SliderStoreActions>()((
-  set,
-) => {
+export const createSliderSlice: StateCreator<SliderSlice> = (set) => {
   return {
-    ...init,
-    update: ({ group, sliderIndex, field, value }) => {
+    slidersData: createInit(),
+    slidersUpdate: ({ group, sliderIndex, field, value }) => {
       set((state) => {
         const updated = { ...state };
-        updated.data[group][sliderIndex][field] = value;
+        updated.slidersData[group][sliderIndex][field] = value;
         return updated;
       });
     },
   };
-});
+};

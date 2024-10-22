@@ -3,7 +3,6 @@ import { GradientOverlay } from "@/components/GradientOverlay";
 import { Pill } from "@/components/Pill";
 import { Tab } from "@/components/Tab";
 import { useFullscreen } from "@/hooks/useFullScreen";
-import { lastGroupStore } from "@/stores/lastGroup";
 import { Icon, IconifyIconProps } from "@iconify/react/dist/iconify.js";
 import {
   createLink,
@@ -27,6 +26,7 @@ import { Route as transportRoute } from "@/routes/control/transport/route";
 import { Route as slidersRoute } from "@/routes/control/sliders/$groupId";
 import { Route as padsRoute } from "@/routes/control/pads/$groupId";
 import { GroupTabs } from "@/components/GroupTabs";
+import { boundStore } from "@/store";
 
 type ControllerPropsType = PropsWithChildren;
 export const ControllerLayout = memo((props: ControllerPropsType) => {
@@ -97,7 +97,10 @@ const Header = () => {
 };
 
 function SlidersNavLink() {
-  const { sliders: lastSliderGroup } = useStore(lastGroupStore);
+  const lastSliderGroup = useStore(
+    boundStore,
+    (state) => state.lastSliderGroup,
+  );
   return (
     <NavLink
       to={slidersRoute.to}
@@ -111,12 +114,12 @@ function SlidersNavLink() {
 }
 
 function PadsNavLink() {
-  const { pads: lastPadsGroup } = useStore(lastGroupStore);
+  const lastPadGroup = useStore(boundStore, (state) => state.lastPadGroup);
   return (
     <NavLink
       to={padsRoute.to}
       // @ts-ignore
-      params={{ groupId: lastPadsGroup } as ToSubOptions["params"]}
+      params={{ groupId: lastPadGroup } as ToSubOptions["params"]}
       icon="bxs:grid"
     >
       Pads

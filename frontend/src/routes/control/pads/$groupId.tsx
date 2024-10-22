@@ -1,5 +1,6 @@
 import { Pad } from "@/components/Pad";
-import { GroupNumType, lastGroupStore } from "@/stores/lastGroup";
+import { boundStore } from "@/store";
+import { GroupNum } from "@/store/lastGroup";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/control/pads/$groupId")({
@@ -7,8 +8,11 @@ export const Route = createFileRoute("/control/pads/$groupId")({
   loader: ({ params: { groupId } }) => {
     const id = parseInt(groupId);
     if (id > 4 || id < 1) throw notFound();
-    const { update } = lastGroupStore.getState();
-    update("pads", groupId as GroupNumType);
+
+    boundStore.setState((state) => ({
+      ...state,
+      lastPadGroup: groupId as GroupNum,
+    }));
   },
   notFoundComponent: () => {
     return (

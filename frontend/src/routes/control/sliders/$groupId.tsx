@@ -1,6 +1,6 @@
 import Slider from "@/components/Slider";
-import { GroupNumType, lastGroupStore } from "@/stores/lastGroup";
-import { GroupNum, useSliderStore } from "@/stores/sliders";
+import { boundStore } from "@/store";
+import { GroupNum } from "@/store/lastGroup";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useStore } from "zustand/react";
 
@@ -9,8 +9,10 @@ export const Route = createFileRoute("/control/sliders/$groupId")({
   loader: ({ params: { groupId } }) => {
     const id = parseInt(groupId);
     if (id > 4 || id < 1) throw notFound();
-    const { update } = lastGroupStore.getState();
-    update("sliders", groupId as GroupNumType);
+    boundStore.setState((state) => ({
+      ...state,
+      lastSliderGroup: groupId as GroupNum,
+    }));
   },
   notFoundComponent: () => {
     return (
@@ -30,8 +32,12 @@ export const Route = createFileRoute("/control/sliders/$groupId")({
 });
 
 function SliderGroup() {
-  const group = parseInt(useStore(lastGroupStore).sliders) as GroupNum;
-  const sliders = useSliderStore((state) => state.data[group]);
+  // const group = parseInt(useStore(lastGroupStore).sliders) as GroupNum;
+  // const sliders = useSliderStore((state) => state.data[group]);
+
+  const group = useStore(boundStore, (state) => state.lastSliderGroup);
+  const sliders = useStore(boundStore, (state) => state.slidersData[group]);
+
   return (
     <>
       <main className="grid flex-1 grid-cols-6 justify-between gap-4">

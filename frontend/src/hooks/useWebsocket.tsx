@@ -1,34 +1,62 @@
-import { createContext, PropsWithChildren, useContext } from "react";
+import {
+  createContext,
+  MutableRefObject,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
-function openWebsocket() {
+export function openWebsocket() {
   const hostname = window.location.hostname;
   const port = 8080;
   const searchParams = new URLSearchParams({ portName: "vmgapp" });
   const url = new URL(`ws://${hostname}:${port}/ws?${searchParams.toString()}`);
   const ws = new WebSocket(url);
 
-  ws.onopen = () => console.log("Web socket connected to " + url.host);
-
   return ws;
 }
 
-export const websocketContext = createContext(openWebsocket());
+const websocketContext = createContext<MutableRefObject<WebSocket> | null>(
+  null,
+);
 
-export interface WebsocketContext {
-  socket: WebSocket;
-}
+export function useWebsocket() {
+  type WebSocketReadyState = "open" | "closed" | "connecting";
+  const [state, setState] = useState<WebSocketReadyState>("closed");
+  const socketRef = useContext(websocketContext);
 
-export function useWebsocket(): WebsocketContext {
-  const ws = useContext(websocketContext);
+  function reconnectSocket() {
+    console.log(socketRef?.current);
+    if (socketRef?.current) {
+      setState("connecting");
+      console.log("Reconnecting...");
+      socketRef.current = openWebsocket();
+    }
+  }
+
+  useEffect(() => {
+    const ws = socketRef?.current;
+    if (!ws) return;
+
+    ws.onopen = () => setState("open");
+    ws.onclose = () => setState("closed");
+  }, [socketRef?.current, state]);
 
   return {
-    socket: ws!,
+    socketRef,
+    reconnectSocket,
+    socketState: state,
   };
 }
 
 export function WebSocketProvider({ children }: PropsWithChildren) {
-  const ws = openWebsocket();
+  const wsRef = useRef(openWebsocket());
+
   return (
-    <websocketContext.Provider value={ws}>{children}</websocketContext.Provider>
+    <websocketContext.Provider value={wsRef}>
+      {children}
+    </websocketContext.Provider>
   );
 }

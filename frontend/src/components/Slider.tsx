@@ -1,9 +1,11 @@
 import * as Slider from "@radix-ui/react-slider";
 import { useEffect, useRef, useState } from "react";
 import { useEventListener } from "@/hooks/useEventListener";
-import { GroupNum, SliderUpdateParams, useSliderStore } from "@/stores/sliders";
+import { GroupNum, SliderUpdateParams } from "@/store/sliders";
 import { Pill } from "./Pill";
 import { useWebsocket } from "@/hooks/useWebsocket";
+import { useStore } from "zustand";
+import { boundStore } from "@/store";
 
 type SliderPropsType = {
   sliderIndex: number;
@@ -12,11 +14,15 @@ type SliderPropsType = {
 
 export default ({ sliderIndex, group }: SliderPropsType) => {
   const ref = useRef<HTMLSpanElement>(null);
-  const value = useSliderStore((state) => state.data[group][sliderIndex].value);
-  const { id, name, displayUnit } = useSliderStore(
-    (state) => state.data[group][sliderIndex],
+  const value = useStore(
+    boundStore,
+    (state) => state.slidersData[group][sliderIndex].value,
   );
-  const update = useSliderStore((state) => state.update);
+  const { id, name, displayUnit } = useStore(
+    boundStore,
+    (state) => state.slidersData[group][sliderIndex],
+  );
+  const update = useStore(boundStore, (state) => state.slidersUpdate);
 
   function handleChange(input: number[]) {
     const value = input[0] as never;
