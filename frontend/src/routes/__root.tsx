@@ -1,8 +1,10 @@
-import { memo, lazy, useEffect, useState } from "react";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { memo, lazy, useEffect } from "react";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { ControllerLayout } from "@/layouts/controllers";
-import { openSocket, SocketContext } from "@/utils/socket";
-import { SocketLoadingComponent } from "@/components/WebsocketStatus";
+import { Button } from "@/components/Button";
+import { useStore } from "zustand";
+import { boundStore } from "@/store";
+import { logger } from "@/utils/logger";
 
 const TanStackRouterDevTools = import.meta.env.PROD
   ? () => null
@@ -12,37 +14,37 @@ const TanStackRouterDevTools = import.meta.env.PROD
       })),
     );
 
-export const Route = createRootRouteWithContext<SocketContext>()({
+export const Route = createRootRoute({
   component: memo(RootComponent),
 });
 
 function RootComponent() {
-  const [state, setState] = useState<WebSocket["readyState"]>(0);
-  const socket = Route.useRouteContext();
+  const is_socket_open = useStore(boundStore, (state) => state.is_socket_open);
+  const open_socket = useStore(boundStore, (state) => state.open_socket);
 
-  useEffect(() => {
-    socket.onopen = () => {
-      socket = openSocket();
-      setState(socket.OPEN);
-    };
-    socket.onclose = () => setState(socket.CLOSED);
-  }, [socket]);
-
-  if (state !== ctx.socket.OPEN) {
-    return (
-      <SocketLoadingComponent
-        readyState={state}
-        reconnectSocket={ctx.reconnectSocket}
-      />
-    );
+  function handle_reconnect() {
+    open_socket();
   }
 
   return (
     <>
       <ControllerLayout>
-        <Outlet />
+        {is_socket_open ? (
+          <Outlet />
+        ) : (
+          <DisconnectedComponent handle_reconnect={handle_reconnect} />
+        )}
       </ControllerLayout>
       <TanStackRouterDevTools />
     </>
+  );
+}
+
+function DisconnectedComponent(props: { handle_reconnect: () => void }) {
+  return (
+    <div>
+      <span>Disconnected from host.</span>
+      <Button onClick={() => props.handle_reconnect()}>Reconnect</Button>
+    </div>
   );
 }

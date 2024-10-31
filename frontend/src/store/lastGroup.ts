@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import { StateCreator } from "zustand";
 
 export type GroupType = "sliders" | "pads";
@@ -14,7 +15,7 @@ export const createLastGroupSlice: StateCreator<LastGroupSlice> = (set) => {
     lastPadGroup: "1",
     lastGroupUpdate: (group, val) => {
       set((state) => {
-        console.log(state.lastSliderGroup, state.lastPadGroup);
+        logger([state.lastSliderGroup, state.lastPadGroup]);
         return { ...state, [group]: val };
       });
     },

@@ -46,12 +46,14 @@ export default ({ sliderIndex, group }: SliderPropsType) => {
   });
 
   // Send MIDI message only if slider val changes, not on render
-  // const { socket } = useWebsocket();
+  const socket = useStore(boundStore, (state) => state.socket);
+  const is_socket_open = useStore(boundStore, (state) => state.is_socket_open);
   const [prevValue, setPrevValue] = useState(value); // Diff current val with previous val
   useEffect(() => {
+    if (!is_socket_open) return;
     if (prevValue !== value) {
       const midi_message = [176, id, value];
-      // socket.send(JSON.stringify(midi_message));
+      socket!.send(JSON.stringify(midi_message));
       setPrevValue(value);
     }
   }, [value]);

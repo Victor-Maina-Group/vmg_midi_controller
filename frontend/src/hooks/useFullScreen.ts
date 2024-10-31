@@ -1,9 +1,12 @@
 import { RefObject, useRef, useState } from "react";
 import { useEventListener } from "./useEventListener";
+import { logger } from "@/utils/logger";
 
 export function useFullscreen(r?: RefObject<HTMLElement>) {
   const ref = r ?? useRef(document.documentElement);
-  const [isFullscreen, setIsFullscreen] = useState<boolean>();
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(
+    document.fullscreenElement !== null,
+  );
 
   function openFullScreen() {
     if (!ref.current) {
@@ -11,13 +14,13 @@ export function useFullscreen(r?: RefObject<HTMLElement>) {
     }
 
     if (ref.current.requestFullscreen) {
-      ref.current.requestFullscreen().catch((err) => console.error(err));
+      ref.current.requestFullscreen().catch((err) => logger(err));
     }
   }
 
   function exitFullScreen() {
     if (document.exitFullscreen) {
-      document.exitFullscreen().catch((err) => console.error(err));
+      document.exitFullscreen().catch((err) => logger(err));
     }
   }
 
@@ -33,6 +36,11 @@ export function useFullscreen(r?: RefObject<HTMLElement>) {
       setIsFullscreen(document.fullscreenElement !== null);
     },
   });
+
+  /* useEffect(() => {
+    if(!ref.current) return;
+    setIs
+  }, []) */
 
   return { isFullscreen, openFullScreen, exitFullScreen, toggleFullScreen };
 }

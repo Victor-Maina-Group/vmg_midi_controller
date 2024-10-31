@@ -27,21 +27,24 @@ import { Route as slidersRoute } from "@/routes/control/sliders/$groupId";
 import { Route as padsRoute } from "@/routes/control/pads/$groupId";
 import { GroupTabs } from "@/components/GroupTabs";
 import { boundStore } from "@/store";
+import { logger } from "@/utils/logger";
 
 type ControllerPropsType = PropsWithChildren;
 export const ControllerLayout = memo((props: ControllerPropsType) => {
+  const is_socket_open = useStore(boundStore, (state) => state.is_socket_open);
   return (
     <div className="container m-auto flex min-h-full flex-col gap-4 p-4">
-      <Header />
+      <Header showNav={is_socket_open} />
       <div className="flex flex-1 gap-8 md:gap-12">
         {props.children}
-        <GroupTabs />
+        {is_socket_open && <GroupTabs />}
       </div>
     </div>
   );
 });
 
-const Header = () => {
+type HeaderProps = { showNav: boolean };
+const Header = ({ showNav }: HeaderProps) => {
   const navRef = useRef<HTMLDivElement>(null);
   const { pathname } = useLocation();
   // Scroll to respective tab when location changes
@@ -67,19 +70,21 @@ const Header = () => {
 
   return (
     <header className="item-center flex justify-between gap-4 font-medium">
-      <nav className="relative max-lg:flex-1">
-        <GradientOverlay parentRef={navRef} />
-        <div
-          ref={navRef}
-          className="inset-0 z-10 flex max-w-max gap-2 overflow-x-auto [-ms-overflow-style:_none] [overflow:-moz-scrollbars-none] [scrollbar-with:_none] max-lg:absolute [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar]:w-0"
-        >
-          <NavLink to={transportRoute.to} icon="bx:play" parentref={navRef}>
-            Transport
-          </NavLink>
-          <SlidersNavLink />
-          <PadsNavLink />
-        </div>
-      </nav>
+      {showNav && (
+        <nav className="relative max-lg:flex-1">
+          <GradientOverlay parentRef={navRef} />
+          <div
+            ref={navRef}
+            className="inset-0 z-10 flex max-w-max gap-2 overflow-x-auto [-ms-overflow-style:_none] [overflow:-moz-scrollbars-none] [scrollbar-with:_none] max-lg:absolute [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar]:w-0"
+          >
+            <NavLink to={transportRoute.to} icon="bx:play" parentref={navRef}>
+              Transport
+            </NavLink>
+            <SlidersNavLink />
+            <PadsNavLink />
+          </div>
+        </nav>
+      )}
 
       {/* <TrackInfo /> */}
 
@@ -88,6 +93,7 @@ const Header = () => {
           <Icon icon="bx:cog" />
         </Button> */}
 
+        <ToggleConnection />
         <Button onClick={() => toggleFullScreen()}>
           <Icon icon={isFullscreen ? "bx:exit-fullscreen" : "bx:fullscreen"} />
         </Button>
@@ -95,6 +101,23 @@ const Header = () => {
     </header>
   );
 };
+
+function ToggleConnection() {
+  const close_socket = useStore(boundStore, (state) => state.close_socket);
+  const is_socket_open = useStore(boundStore, (state) => state.is_socket_open);
+
+  function handleClick() {
+    close_socket();
+  }
+
+  if (is_socket_open) {
+    return (
+      <Button onClick={() => handleClick()}>
+        <Icon icon="bx:x" />
+      </Button>
+    );
+  }
+}
 
 function SlidersNavLink() {
   const lastSliderGroup = useStore(
