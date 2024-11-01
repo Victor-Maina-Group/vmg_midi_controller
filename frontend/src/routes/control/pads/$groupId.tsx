@@ -2,6 +2,7 @@ import { Pad } from "@/components/Pad";
 import { boundStore } from "@/store";
 import { GroupNum } from "@/store/lastGroup";
 import { createFileRoute, notFound } from "@tanstack/react-router";
+import { useStore } from "zustand/react";
 
 export const Route = createFileRoute("/control/pads/$groupId")({
   component: Pads,
@@ -27,17 +28,17 @@ export const Route = createFileRoute("/control/pads/$groupId")({
 });
 
 function Pads() {
+  const lastGroup = useStore(boundStore, (state) => state.lastPadGroup);
+  const pads = useStore(boundStore, (state) => {
+    return state.pad_groups[lastGroup];
+  });
   return (
     <>
-      <main className="grid flex-1 grid-cols-4 gap-4">
-        <Pad />
-        <Pad />
-        <Pad />
-        <Pad />
-        <Pad />
-        <Pad />
-        <Pad />
-        <Pad />
+      <main className="grid flex-1 gap-4 portrait:grid-cols-2 landscape:grid-cols-3">
+        {Object.keys(pads).map((key) => {
+          const id = parseInt(key);
+          return <Pad key={key} padData={pads[id]}></Pad>;
+        })}
       </main>
     </>
   );

@@ -25,7 +25,7 @@ export const GroupTabs = memo(() => {
   if (!groupId) return null;
 
   return (
-    <aside className="flex flex-col justify-center gap-4">
+    <aside className="grid-cols-2 justify-center gap-4 portrait:grid landscape:flex landscape:flex-col">
       {tabArr.map((num) => {
         return (
           <GroupTab
@@ -57,7 +57,11 @@ export const GroupTab = memo(
 
       return (
         <Link ref={ref} {...props} to={props.href}>
-          <Tab ref={ref} isActive={isActive} className="h-max">
+          <Tab
+            ref={ref}
+            isActive={isActive}
+            className="flex h-max w-full justify-center"
+          >
             {props.children as ReactNode}
           </Tab>
         </Link>

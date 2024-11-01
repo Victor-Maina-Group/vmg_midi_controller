@@ -27,7 +27,7 @@ func GetMIDIPort(name string, portType PortType) (drivers.Port, error) {
 			return nil, err
 		}
 		if in == nil {
-			return nil, fmt.Errorf("Port not found with name %v\n", in.String())
+			return nil, fmt.Errorf("Port not found with name %v\n", name)
 		}
 		log.Printf("In port found: %v\n", in.String())
 		return in, nil
@@ -37,9 +37,9 @@ func GetMIDIPort(name string, portType PortType) (drivers.Port, error) {
 			return nil, err
 		}
 		if out == nil {
-			return nil, fmt.Errorf("Port not found with name %v\n", out.String())
+			return nil, fmt.Errorf("Port not found with name %v\n", name)
 		}
-		log.Printf("In port found: %v\n", out.String())
+		log.Printf("Out port found: %v\n", out.String())
 		return out, nil
 	default:
 		return nil, fmt.Errorf("Invalid port type.")
@@ -59,6 +59,7 @@ func GetMIDIPortOut(name string) (drivers.Out, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(port)
 	return midi.OutPort(port.Number())
 }
 

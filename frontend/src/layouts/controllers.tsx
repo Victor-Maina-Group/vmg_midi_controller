@@ -35,7 +35,7 @@ export const ControllerLayout = memo((props: ControllerPropsType) => {
   return (
     <div className="container m-auto flex min-h-full flex-col gap-4 p-4">
       <Header showNav={is_socket_open} />
-      <div className="flex flex-1 gap-8 md:gap-12">
+      <div className="flex flex-1 gap-8 md:gap-12 portrait:flex-col landscape:flex-row">
         {props.children}
         {is_socket_open && <GroupTabs />}
       </div>
@@ -69,9 +69,9 @@ const Header = ({ showNav }: HeaderProps) => {
   const { isFullscreen, toggleFullScreen } = useFullscreen();
 
   return (
-    <header className="item-center flex justify-between gap-4 font-medium">
-      {showNav && (
-        <nav className="relative max-lg:flex-1">
+    <header className="relative flex items-center justify-between gap-4 font-medium">
+      {showNav ? (
+        <nav className="relative min-h-10 flex-1">
           <GradientOverlay parentRef={navRef} />
           <div
             ref={navRef}
@@ -84,17 +84,21 @@ const Header = ({ showNav }: HeaderProps) => {
             <PadsNavLink />
           </div>
         </nav>
+      ) : (
+        <span className="h-full font-medium leading-none">
+          Disconnected from host.
+        </span>
       )}
 
       {/* <TrackInfo /> */}
 
-      <div className="flex items-center gap-1">
+      <div className="ml-auto flex items-center gap-1">
         {/* <Button>
           <Icon icon="bx:cog" />
         </Button> */}
 
         <ToggleConnection />
-        <Button onClick={() => toggleFullScreen()}>
+        <Button onClick={() => toggleFullScreen()} className="h-full">
           <Icon icon={isFullscreen ? "bx:exit-fullscreen" : "bx:fullscreen"} />
         </Button>
       </div>
@@ -103,20 +107,29 @@ const Header = ({ showNav }: HeaderProps) => {
 };
 
 function ToggleConnection() {
+  const open_socket = useStore(boundStore, (state) => state.open_socket);
   const close_socket = useStore(boundStore, (state) => state.close_socket);
   const is_socket_open = useStore(boundStore, (state) => state.is_socket_open);
 
   function handleClick() {
-    close_socket();
+    if (is_socket_open) close_socket();
+    else open_socket();
   }
 
-  if (is_socket_open) {
-    return (
-      <Button onClick={() => handleClick()}>
+  // if (is_socket_open) {
+  // }
+  return (
+    <Button onClick={() => handleClick()} className="h-full">
+      {!is_socket_open ? (
+        <>
+          <span className="font-medium leading-none">Connect</span>
+          <Icon icon="bx:chevrons-right" />
+        </>
+      ) : (
         <Icon icon="bx:x" />
-      </Button>
-    );
-  }
+      )}
+    </Button>
+  );
 }
 
 function SlidersNavLink() {

@@ -1,9 +1,10 @@
 import { memo, lazy, useEffect } from "react";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { ControllerLayout } from "@/layouts/controllers";
 import { Button } from "@/components/Button";
 import { useStore } from "zustand";
 import { boundStore } from "@/store";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { logger } from "@/utils/logger";
 
 const TanStackRouterDevTools = import.meta.env.PROD
@@ -16,35 +17,21 @@ const TanStackRouterDevTools = import.meta.env.PROD
 
 export const Route = createRootRoute({
   component: memo(RootComponent),
+  loader: ({ route, location }) => {
+    const is_socket_open = boundStore.getState().is_socket_open;
+    if (route.to !== location.href && !is_socket_open) {
+      throw redirect({ to: route.to });
+    }
+  },
 });
 
 function RootComponent() {
   const is_socket_open = useStore(boundStore, (state) => state.is_socket_open);
-  const open_socket = useStore(boundStore, (state) => state.open_socket);
-
-  function handle_reconnect() {
-    open_socket();
-  }
 
   return (
     <>
-      <ControllerLayout>
-        {is_socket_open ? (
-          <Outlet />
-        ) : (
-          <DisconnectedComponent handle_reconnect={handle_reconnect} />
-        )}
-      </ControllerLayout>
+      <ControllerLayout>{is_socket_open && <Outlet />}</ControllerLayout>
       <TanStackRouterDevTools />
     </>
-  );
-}
-
-function DisconnectedComponent(props: { handle_reconnect: () => void }) {
-  return (
-    <div>
-      <span>Disconnected from host.</span>
-      <Button onClick={() => props.handle_reconnect()}>Reconnect</Button>
-    </div>
   );
 }
