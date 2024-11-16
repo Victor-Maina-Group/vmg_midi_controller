@@ -1,4 +1,3 @@
-import { StateCreator } from "zustand";
 import { GroupNum } from "./lastGroup";
 import { combine } from "zustand/middleware";
 

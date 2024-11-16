@@ -1,12 +1,8 @@
-import { memo, lazy, useEffect } from "react";
+import { memo, lazy } from "react";
 import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { ControllerLayout } from "@/layouts/controllers";
-import { Button } from "@/components/Button";
 import { useStore } from "zustand";
 import { boundStore } from "@/store";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { logger } from "@/utils/logger";
-
 const TanStackRouterDevTools = import.meta.env.PROD
   ? () => null
   : lazy(() =>

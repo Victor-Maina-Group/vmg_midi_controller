@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import { memo } from "react";
 import { useState, RefObject, useEffect } from "react";
 
 type GradientOverlayPropsType = {
   parentRef: RefObject<HTMLElement>;
 };
-export const GradientOverlay = React.memo((props: GradientOverlayPropsType) => {
+export const GradientOverlay = memo((props: GradientOverlayPropsType) => {
   type SizeType = {
     clientWidth: number;
     scrollWidth: number;
@@ -15,7 +15,7 @@ export const GradientOverlay = React.memo((props: GradientOverlayPropsType) => {
   const [showRightOverlay, setShowRightOverlay] = useState<boolean>();
 
   function updateParentWidth(entries: ResizeObserverEntry[]) {
-    for (let entry of entries) {
+    for (const entry of entries) {
       const { clientWidth, scrollWidth } = entry.target;
       if (
         clientWidth !== parentRectInfo?.clientWidth ||
@@ -39,7 +39,7 @@ export const GradientOverlay = React.memo((props: GradientOverlayPropsType) => {
     );
 
     return () => observer.disconnect();
-  }, [parentRectInfo, showOverlay, props.parentRef]);
+  }, [parentRectInfo, showOverlay, props.parentRef, updateParentWidth]);
 
   // Toggle left overlay on scroll
   useEffect(() => {
@@ -54,7 +54,7 @@ export const GradientOverlay = React.memo((props: GradientOverlayPropsType) => {
     return () => {
       el.removeEventListener("scroll", listener);
     };
-  }, [showLeftOverlay]);
+  }, [showLeftOverlay, props.parentRef, updateParentWidth]);
 
   // Toggle right overlay on scroll
   useEffect(() => {
@@ -71,7 +71,7 @@ export const GradientOverlay = React.memo((props: GradientOverlayPropsType) => {
     return () => {
       el.removeEventListener("scroll", listener);
     };
-  }, [showRightOverlay]);
+  }, [showRightOverlay, props.parentRef]);
 
   return (
     <div

@@ -1,6 +1,5 @@
 import { Button } from "@/components/Button";
 import { GradientOverlay } from "@/components/GradientOverlay";
-import { Pill } from "@/components/Pill";
 import { Tab } from "@/components/Tab";
 import { useFullscreen } from "@/hooks/useFullScreen";
 import { Icon, IconifyIconProps } from "@iconify/react/dist/iconify.js";
@@ -27,7 +26,6 @@ import { Route as slidersRoute } from "@/routes/control/sliders/$groupId";
 import { Route as padsRoute } from "@/routes/control/pads/$groupId";
 import { GroupTabs } from "@/components/GroupTabs";
 import { boundStore } from "@/store";
-import { logger } from "@/utils/logger";
 
 type ControllerPropsType = PropsWithChildren;
 export const ControllerLayout = memo((props: ControllerPropsType) => {
@@ -187,6 +185,7 @@ const NavLink = memo(
             if (!parentEl || !el) {
               return;
             }
+            // @ts-ignore
             parentEl.scrollTo({ left: el.offsetLeft, behavior: "smooth" });
           }
         }, [isActive]);
@@ -204,52 +203,52 @@ const NavLink = memo(
   ),
 );
 
-function TrackInfo() {
-  return (
-    <div className="flex items-center gap-1">
-      <TimeSignature />
-      <Tempo />
-      <PlaybackStatus />
-      <SongPosition />
-    </div>
-  );
-}
+// function TrackInfo() {
+//   return (
+//     <div className="flex items-center gap-1">
+//       <TimeSignature />
+//       <Tempo />
+//       <PlaybackStatus />
+//       <SongPosition />
+//     </div>
+//   );
+// }
 
-function TimeSignature() {
-  return (
-    <Pill>
-      <span>4</span>
-      <span>/</span>
-      <span>4</span>
-    </Pill>
-  );
-}
-
-function Tempo() {
-  return (
-    <Pill>
-      <span>120</span>
-      <span>BPM</span>
-    </Pill>
-  );
-}
-
-function PlaybackStatus() {
-  return (
-    <div className="px-2">
-      <Icon icon="bx:play" />
-    </div>
-  );
-}
-
-function SongPosition() {
-  return (
-    <Pill>
-      <span>4</span>
-      <span>.</span>
-      <span>0</span>
-      <span>.</span>
-      <span>1</span>
-    </Pill>
-  );
-}
+// function TimeSignature() {
+//   return (
+//     <Pill>
+//       <span>4</span>
+//       <span>/</span>
+//       <span>4</span>
+//     </Pill>
+//   );
+// }
+//
+// function Tempo() {
+//   return (
+//     <Pill>
+//       <span>120</span>
+//       <span>BPM</span>
+//     </Pill>
+//   );
+// }
+//
+// function PlaybackStatus() {
+//   return (
+//     <div className="px-2">
+//       <Icon icon="bx:play" />
+//     </div>
+//   );
+// }
+//
+// function SongPosition() {
+//   return (
+//     <Pill>
+//       <span>4</span>
+//       <span>.</span>
+//       <span>0</span>
+//       <span>.</span>
+//       <span>1</span>
+//     </Pill>
+//   );
+// }

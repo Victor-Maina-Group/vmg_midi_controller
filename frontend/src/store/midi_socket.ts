@@ -1,4 +1,3 @@
-import { logger } from "@/utils/logger";
 import { StateCreator } from "zustand";
 
 type MIDISocketEventHandlerType = (ev?: Event) => void;
