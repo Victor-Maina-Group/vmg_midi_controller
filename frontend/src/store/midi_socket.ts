@@ -32,7 +32,9 @@ export const create_midi_socket_slice: StateCreator<MIDISocketSlice> = (
     socket: null,
     options: {
       hostname: /* "localhost" */ window.location.hostname,
-      port: 8080,
+      port: !isNaN(parseInt(window.location.port))
+        ? parseInt(window.location.port)
+        : 8080,
       params: { portName: "vmgapp" },
     },
     set_options: (options) => {

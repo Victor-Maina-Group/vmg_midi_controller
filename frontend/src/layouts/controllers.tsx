@@ -1,3 +1,4 @@
+import QRCode from "qrcode";
 import { Button } from "@/components/Button";
 import { GradientOverlay } from "@/components/GradientOverlay";
 import { Tab } from "@/components/Tab";
@@ -36,6 +37,7 @@ export const ControllerLayout = memo((props: ControllerPropsType) => {
       <div className="flex flex-1 gap-8 md:gap-12 portrait:flex-col landscape:flex-row">
         {props.children}
         {is_socket_open && <GroupTabs />}
+        {!is_socket_open && <HostInfo />}
       </div>
     </div>
   );
@@ -103,6 +105,65 @@ const Header = ({ showNav }: HeaderProps) => {
     </header>
   );
 };
+
+function HostInfo() {
+  const [host_address, set_host_address] = useState<string>();
+  const qr_canvas_ref = useRef<HTMLCanvasElement>(null);
+
+  async function get_ip() {
+    const url = new URL(window.location.href + "address");
+    const res = await fetch(url);
+    const hostname = await res.text();
+
+    if (hostname.startsWith("<!doctype html>")) return;
+
+    const port = window.location.port;
+
+    return `http://${hostname}:${port}`;
+  }
+
+  function generate_qr_code(val: string) {
+    if (qr_canvas_ref.current === undefined) return;
+
+    QRCode.toCanvas(qr_canvas_ref.current, val, function (error) {
+      if (error) console.error(error);
+      console.log("success!");
+    });
+  }
+
+  useEffect(() => {
+    get_ip().then((ip) => {
+      set_host_address(ip);
+
+      if (host_address) generate_qr_code(host_address);
+    });
+  }, [host_address]);
+
+  if (host_address !== undefined) {
+    return (
+      <div className="grid gap-8 md:grid-cols-[auto_1fr]">
+        <div className="flex flex-1 flex-col">
+          <h1 className="mb-4 text-2xl font-bold">Scan this QR code</h1>
+          <div className="w-full md:max-w-80">
+            <canvas
+              ref={qr_canvas_ref}
+              className="!h-full !w-full object-contain object-top"
+            ></canvas>
+          </div>
+        </div>
+
+        <div className="other-info flex-1">
+          <h1 className="mb-4 text-2xl font-bold">
+            Or enter this link in your device's browser.
+          </h1>
+          <Button className="rounded-xl text-left text-lg font-medium dark:bg-gray-700">
+            {host_address}
+          </Button>
+        </div>
+      </div>
+    );
+  } else return null;
+}
 
 function ToggleConnection() {
   const open_socket = useStore(boundStore, (state) => state.open_socket);

@@ -7,7 +7,7 @@ export const Button = forwardRef(
       <button
         ref={ref}
         {...props}
-        className={`rounded-full px-4 py-3 bg-gray-200 flex items-center gap-2  hover:bg-gray-300 ${props.className}`}
+        className={`flex items-center gap-2 rounded-full bg-gray-200 px-4 py-3 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-800 ${props.className}`}
       >
         {props.children}
       </button>

@@ -80,13 +80,13 @@ export const GradientOverlay = memo((props: GradientOverlayPropsType) => {
       {/* Left Overlay */}
       <div
         id="leftOverlay"
-        className={`absolute inset-0 right-[80%] bg-gradient-to-r from-white to-white/0 ${showLeftOverlay ? "opacity-100" : "opacity-0"}`}
+        className={`absolute inset-0 right-[80%] bg-gradient-to-r from-white to-white/0 dark:from-gray-900 dark:to-gray-900/0 ${showLeftOverlay ? "opacity-100" : "opacity-0"}`}
       ></div>
 
       {/* Right Overlay */}
       <div
         id="leftOverlay"
-        className={`absolute inset-0 left-[80%] bg-gradient-to-l from-white to-white/0 ${showRightOverlay ? "opacity-100" : "opacity-0"}`}
+        className={`absolute inset-0 left-[80%] bg-gradient-to-l from-white to-white/0 dark:from-gray-900 dark:to-gray-900/0 ${showRightOverlay ? "opacity-100" : "opacity-0"}`}
       ></div>
     </div>
   );

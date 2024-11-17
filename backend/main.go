@@ -27,6 +27,8 @@ func main() {
 		panic(err)
 	}
 
+	router.HandleFunc("/address", api.GetIpAddress)
+
 	router.HandleFunc("/ws", api.WsEnpointHandler)
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

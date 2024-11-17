@@ -4,7 +4,7 @@ export function Pill(props: PillPropsType) {
   return (
     <div
       className={
-        "flex w-fit items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-sm font-medium " +
+        "flex w-fit items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-sm font-medium dark:bg-gray-700 " +
         props.className
       }
     >

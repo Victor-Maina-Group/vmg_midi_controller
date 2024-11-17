@@ -66,15 +66,17 @@ export function Pad(props: PadPropsType) {
   return (
     <Button
       ref={button_ref}
-      className={`relative flex-1 !rounded-2xl !p-1 ${is_active ? "!bg-gray-400 hover:!bg-gray-400" : ""} p-text-sm/none !p-4 font-bold text-gray-900 ${props.className}`}
+      className={`relative flex-1 !rounded-2xl !p-1 ${is_active ? "!bg-gray-400 hover:bg-gray-400 dark:!bg-gray-900 dark:hover:bg-gray-800" : ""} p-text-sm/none !p-4 font-bold text-gray-900 dark:text-gray-50 ${props.className}`}
     >
-      <div className="absolute inset-1 z-0 rounded-xl border-[2px] border-white p-4"></div>
+      <div className="absolute inset-1 z-0 rounded-xl border-[2px] border-white p-4 dark:border-gray-500"></div>
       <div className="flex h-full flex-1 flex-col justify-between">
         <div className="text-left">{label}</div>
 
         <div className="text-right">
           <span>{note.key}</span>
-          <span className="text-gray-700">{note.octave}</span>
+          <span className="text-gray-700 dark:text-gray-400">
+            {note.octave}
+          </span>
         </div>
       </div>
       {props.children}
