@@ -15,6 +15,6 @@ body  {
   }
 }
 
-/* :root { */
-/*   color-scheme: only dark; */
-/* } */
+:root {
+  color-scheme: only dark;
+}
